@@ -126,7 +126,7 @@ int modbus_flush(modbus_t *ctx)
 }
 
 /* Computes the length of the expected response including checksum */
-static unsigned int compute_response_length_from_request(modbus_t *ctx, uint8_t *req)
+int compute_response_length_from_request(modbus_t *ctx, uint8_t *req)
 {
     int length;
     const int offset = ctx->backend->header_length;

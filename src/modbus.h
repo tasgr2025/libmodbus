@@ -188,6 +188,8 @@ typedef enum {
     MODBUS_QUIRK_ALL = 0xFF
 } modbus_quirks;
 
+MODBUS_API int compute_response_length_from_request(modbus_t *ctx, uint8_t *req);
+
 MODBUS_API int modbus_set_slave(modbus_t *ctx, int slave);
 MODBUS_API int modbus_get_slave(modbus_t *ctx);
 MODBUS_API int modbus_set_error_recovery(modbus_t *ctx,
