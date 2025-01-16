@@ -7,6 +7,10 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
+#ifndef IPTOS_LOWDELAY
+#define	IPTOS_LOWDELAY    0x10
+#endif
+
 // clang-format off
 /* Add this for macros that defined unix flavor */
 #if (defined(__unix__) || defined(unix)) && !defined(USG)
@@ -188,53 +192,38 @@ typedef enum {
     MODBUS_QUIRK_ALL = 0xFF
 } modbus_quirks;
 
-MODBUS_API int compute_response_length_from_request(modbus_t *ctx, uint8_t *req);
 
+MODBUS_API int modbus_get_debug(modbus_t *ctx);
+MODBUS_API int compute_response_length_from_request(modbus_t *ctx, uint8_t *req);
 MODBUS_API int modbus_set_slave(modbus_t *ctx, int slave);
 MODBUS_API int modbus_get_slave(modbus_t *ctx);
-MODBUS_API int modbus_set_error_recovery(modbus_t *ctx,
-                                         modbus_error_recovery_mode error_recovery);
+MODBUS_API int modbus_set_error_recovery(modbus_t *ctx, modbus_error_recovery_mode error_recovery);
+MODBUS_API int modbus_get_error_recovery(modbus_t *ctx);
 MODBUS_API int modbus_set_socket(modbus_t *ctx, int s);
 MODBUS_API int modbus_get_socket(modbus_t *ctx);
-
-MODBUS_API int
-modbus_get_response_timeout(modbus_t *ctx, uint32_t *to_sec, uint32_t *to_usec);
-MODBUS_API int
-modbus_set_response_timeout(modbus_t *ctx, uint32_t to_sec, uint32_t to_usec);
-
-MODBUS_API int
-modbus_get_byte_timeout(modbus_t *ctx, uint32_t *to_sec, uint32_t *to_usec);
+MODBUS_API int modbus_get_response_timeout(modbus_t *ctx, uint32_t *to_sec, uint32_t *to_usec);
+MODBUS_API int modbus_set_response_timeout(modbus_t *ctx, uint32_t to_sec, uint32_t to_usec);
+MODBUS_API int modbus_get_byte_timeout(modbus_t *ctx, uint32_t *to_sec, uint32_t *to_usec);
 MODBUS_API int modbus_set_byte_timeout(modbus_t *ctx, uint32_t to_sec, uint32_t to_usec);
-
-MODBUS_API int
-modbus_get_indication_timeout(modbus_t *ctx, uint32_t *to_sec, uint32_t *to_usec);
-MODBUS_API int
-modbus_set_indication_timeout(modbus_t *ctx, uint32_t to_sec, uint32_t to_usec);
-
+MODBUS_API int modbus_get_indication_timeout(modbus_t *ctx, uint32_t *to_sec, uint32_t *to_usec);
+MODBUS_API int modbus_set_indication_timeout(modbus_t *ctx, uint32_t to_sec, uint32_t to_usec);
 MODBUS_API int modbus_get_header_length(modbus_t *ctx);
-
 MODBUS_API int modbus_connect(modbus_t *ctx);
 MODBUS_API void modbus_close(modbus_t *ctx);
-
 MODBUS_API void modbus_free(modbus_t *ctx);
-
 MODBUS_API int modbus_flush(modbus_t *ctx);
 MODBUS_API int modbus_set_debug(modbus_t *ctx, int flag);
-
 MODBUS_API const char *modbus_strerror(int errnum);
-
 MODBUS_API int modbus_read_bits(modbus_t *ctx, int addr, int nb, uint8_t *dest);
 MODBUS_API int modbus_read_input_bits(modbus_t *ctx, int addr, int nb, uint8_t *dest);
 MODBUS_API int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
-MODBUS_API int
-modbus_read_input_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
+MODBUS_API int modbus_read_input_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
 MODBUS_API int modbus_write_bit(modbus_t *ctx, int coil_addr, int status);
 MODBUS_API int modbus_write_register(modbus_t *ctx, int reg_addr, const uint16_t value);
 MODBUS_API int modbus_write_bits(modbus_t *ctx, int addr, int nb, const uint8_t *data);
-MODBUS_API int
-modbus_write_registers(modbus_t *ctx, int addr, int nb, const uint16_t *data);
-MODBUS_API int
-modbus_mask_write_register(modbus_t *ctx, int addr, uint16_t and_mask, uint16_t or_mask);
+MODBUS_API int modbus_write_registers(modbus_t *ctx, int addr, int nb, const uint16_t *data);
+MODBUS_API int modbus_mask_write_register(modbus_t *ctx, int addr, uint16_t and_mask, uint16_t or_mask);
+
 MODBUS_API int modbus_write_and_read_registers(modbus_t *ctx,
                                                int write_addr,
                                                int write_nb,
@@ -244,8 +233,7 @@ MODBUS_API int modbus_write_and_read_registers(modbus_t *ctx,
                                                uint16_t *dest);
 MODBUS_API int modbus_report_slave_id(modbus_t *ctx, int max_dest, uint8_t *dest);
 
-MODBUS_API modbus_mapping_t *
-modbus_mapping_new_start_address(unsigned int start_bits,
+MODBUS_API modbus_mapping_t *modbus_mapping_new_start_address(unsigned int start_bits,
                                  unsigned int nb_bits,
                                  unsigned int start_input_bits,
                                  unsigned int nb_input_bits,
@@ -260,8 +248,7 @@ MODBUS_API modbus_mapping_t *modbus_mapping_new(int nb_bits,
                                                 int nb_input_registers);
 MODBUS_API void modbus_mapping_free(modbus_mapping_t *mb_mapping);
 
-MODBUS_API int
-modbus_send_raw_request(modbus_t *ctx, const uint8_t *raw_req, int raw_req_length);
+MODBUS_API int modbus_send_raw_request(modbus_t *ctx, const uint8_t *raw_req, int raw_req_length);
 
 MODBUS_API int modbus_send_raw_request_tid(modbus_t *ctx,
                                            const uint8_t *raw_req,
@@ -276,8 +263,7 @@ MODBUS_API int modbus_reply(modbus_t *ctx,
                             const uint8_t *req,
                             int req_length,
                             modbus_mapping_t *mb_mapping);
-MODBUS_API int
-modbus_reply_exception(modbus_t *ctx, const uint8_t *req, unsigned int exception_code);
+MODBUS_API int modbus_reply_exception(modbus_t *ctx, const uint8_t *req, unsigned int exception_code);
 MODBUS_API int modbus_enable_quirks(modbus_t *ctx, unsigned int quirks_mask);
 MODBUS_API int modbus_disable_quirks(modbus_t *ctx, unsigned int quirks_mask);
 

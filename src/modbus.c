@@ -1805,6 +1805,16 @@ int modbus_set_error_recovery(modbus_t *ctx, modbus_error_recovery_mode error_re
     return 0;
 }
 
+int modbus_get_error_recovery(modbus_t *ctx)
+{
+    if (ctx == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    return ctx->error_recovery;
+}
+
 // FIXME Doesn't work under Windows RTU
 int modbus_set_socket(modbus_t *ctx, int s)
 {
@@ -1975,6 +1985,17 @@ int modbus_set_debug(modbus_t *ctx, int flag)
     ctx->debug = flag;
     return 0;
 }
+
+
+int modbus_get_debug(modbus_t *ctx)
+{
+    if (ctx == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+    return ctx->debug;
+}
+
 
 /* Allocates 4 arrays to store bits, input bits, registers and inputs
    registers. The pointers are stored in modbus_mapping structure.
